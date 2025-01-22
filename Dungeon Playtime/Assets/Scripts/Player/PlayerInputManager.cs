@@ -36,11 +36,12 @@ namespace Player
         
         public static PlayerInputManager Instance { get; private set; }
 
-        void Awake()
+        private void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
+                Debug.Log("PlayerInputManager instance initialized.");
                 DontDestroyOnLoad(gameObject);
             }
             else

@@ -13,22 +13,29 @@ namespace Player
         [SerializeField] private float jumpForce = 5.0f;
         [SerializeField] private float gravity = 9.81f;
         
-        [Header("Camera Parameters")]
-        [SerializeField] private CameraLook cameraLook;
-        
         private CharacterController characterController;
         private PlayerInputManager inputManager;
+        private CameraLook cameraLook;
         private Vector3 currentMovement;
 
         private void Awake()
         {
             characterController = GetComponent<CharacterController>();
             inputManager = PlayerInputManager.Instance;
+            
+            if (cameraLook == null)
+                cameraLook = GetComponentInChildren<CameraLook>();
+
+            if (inputManager == null)
+                Debug.LogError("PlayerInputManager.Instance is not initialized. Ensure it is active in the scene.");
+            
+            if (cameraLook == null)
+                Debug.LogError("CameraLook component is missing or not assigned.");
         }
 
         private void Update()
         {
-            if (inputManager == null && cameraLook == null)
+            if (inputManager == null || cameraLook == null)
                 return;
             
             ManageMovement();
