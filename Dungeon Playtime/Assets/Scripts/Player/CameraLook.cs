@@ -1,27 +1,48 @@
 using UnityEngine;
 
-public class CameraLook : MonoBehaviour
+namespace Player
 {
-    [SerializeField] public float sensitivity = 100f;
-    [SerializeField] public float smoothing = 5f;
-    
-    public Transform playerBody;
-    
-    float xRotation = 0f;
-    void Start()
+    public class CameraLook : MonoBehaviour
     {
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-    
-    void Update()
-    {
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime; 
-        
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-        
-        transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        playerBody.Rotate(Vector3.up * mouseX);
+        [SerializeField] private Transform playerBody;
+        [SerializeField] private Camera mainCamera;
+
+        [SerializeField] private float sensitivity = 2.0f;
+        [SerializeField] private float maxXRotation = 90f;
+        [SerializeField] private float minXRotation = -90f;
+
+        private float currentXRotation = 0f;
+
+        public void MouseLook(Vector2 delta)
+        {
+            RotateLook(delta * sensitivity);
+        }
+
+        private void Awake()
+        {
+            if (mainCamera == null)
+                mainCamera = Camera.main;
+
+            if (playerBody == null)
+                playerBody = transform;
+        }
+
+        private void Start()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+        private void RotateLook(Vector2 rotation)
+        {
+            playerBody.Rotate(Vector3.up * rotation.x);
+            
+            currentXRotation -= rotation.y;
+            currentXRotation = Mathf.Clamp(currentXRotation, minXRotation, maxXRotation);
+            
+            mainCamera.transform.localRotation = Quaternion.Euler(currentXRotation, 0f, 0f);
+        }
     }
 }
+
+
